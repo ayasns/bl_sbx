@@ -76,7 +76,6 @@ def main_callback(service_provider: LockdownClient, dvt: DvtSecureSocketProxySer
     WHERE local_path LIKE '/private/var/containers/Shared/SystemGroup/%/Documents/BLDatabaseManager/BLDatabaseManager.sqlite%'
     """)
     conn.commit()
-    conn.close()
             
     # Kill bookassetd and Books processes to stop them from updating BLDatabaseManager.sqlite
     procs = OsTraceService(lockdown=service_provider).get_pid_list().get("Payload")
@@ -97,8 +96,9 @@ def main_callback(service_provider: LockdownClient, dvt: DvtSecureSocketProxySer
     # Upload downloads.28.sqlitedb
     click.secho("Uploading downloads.28.sqlitedb", fg="yellow")
     afc.push("tmp.downloads.28.sqlitedb", "Downloads/downloads.28.sqlitedb")
-    afc.push("empty.txt", "Downloads/downloads.28.sqlitedb-shm")
-    afc.push("empty.txt", "Downloads/downloads.28.sqlitedb-wal")
+    afc.push("tmp.downloads.28.sqlitedb-shm", "Downloads/downloads.28.sqlitedb-shm")
+    afc.push("tmp.downloads.28.sqlitedb-wal", "Downloads/downloads.28.sqlitedb-wal")
+    conn.close()
 
     # Kill itunesstored to trigger BLDataBaseManager.sqlite overwrite
     procs = OsTraceService(lockdown=service_provider).get_pid_list().get("Payload")
